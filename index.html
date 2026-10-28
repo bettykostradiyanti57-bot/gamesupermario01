@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Mario: Belajar Bagian Tumbuhan (Ramah Tunagrahita & Tunanetra)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Accessibility Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Lexend:wght@400;600;800&display=swap');
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: #5c94fc;
+            touch-action: manipulation;
+        }
+
+        .title-font {
+            font-family: 'Fredoka', cursive;
+        }
+
+        /* High Contrast Focus Styles for Special Needs Accessibility */
+        *:focus {
+            outline: 6px solid #FFD700 !important;
+            outline-offset: 4px;
+        }
+
+        /* Large Friendly Card Styling */
+        .easy-card {
+            background-color: #FFFFFF;
+            border: 6px solid #000000;
+            border-radius: 2rem;
+        }
+
+        @keyframes float-gentle {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .animate-float {
+            animation: float-gentle 2s ease-in-out infinite;
+        }
+
+        .high-contrast-card {
+            background-color: #000000 !important;
+            color: #FFFFFF !important;
+            border: 6px solid #FFD700 !important;
+        }
+
+        .high-contrast-card p, .high-contrast-card h1, .high-contrast-card h2, .high-contrast-card h3, .high-contrast-card span {
+            color: #FFFFFF !important;
+        }
+
+        canvas {
+            image-rendering: pixelated;
+            background: linear-gradient(to bottom, #70a5ff 0%, #b3d1ff 70%, #e6f0ff 100%);
+        }
+    </style>
+</head>
+<body class="bg-sky-500 min-h-screen flex flex-col justify-between overflow-x-hidden text-slate-900">
+
+    <!-- Header Suara & Kontras Super Ramah Anak -->
+    <header class="bg-red-600 text-white p-3 shadow-xl border-b-8 border-black z-20">
+        <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-2">
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl">🍄</span>
+                <h1 class="title-font text-2xl md:text-3xl text-yellow-300 tracking-wide font-bold">MARIO & BAGIAN TUMBUHAN</h1>
+            </div>
+            
+            <div class="flex items-center space-x-2">
+                <button id="btn-toggle-speech" onclick="toggleSpeech()" class="bg-yellow-400 hover:bg-yellow-300 text-black px-4 py-3 rounded-2xl font-extrabold border-4 border-black text-base flex items-center gap-2 shadow-md">
+                    <i class="fa-solid fa-volume-high text-xl" id="speech-icon"></i>
+                    <span id="speech-status-text">Suara: ON</span>
+                </button>
+                <button id="btn-toggle-contrast" onclick="toggleHighContrast()" class="bg-black text-white hover:bg-gray-800 px-4 py-3 rounded-2xl font-extrabold border-4 border-white text-base flex items-center gap-2 shadow-md">
+                    <i class="fa-solid fa-circle-half-stroke text-xl"></i>
+                    <span>Kontras Tinggi</span>
+                </button>
+                <button id="btn-audio-help" onclick="repeatQuestionOrInstruction()" class="bg-green-500 hover:bg-green-400 text-white px-4 py-3 rounded-2xl font-extrabold border-4 border-black text-base flex items-center gap-2 shadow-md">
+                    <i class="fa-solid fa-circle-question text-xl"></i>
+                    <span>Bantuan Suara (H)</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Game HUD Stats Bar Sederhana -->
+    <div id="hud-bar" class="bg-yellow-400 border-b-4 border-black p-3 text-black title-font text-lg md:text-xl font-bold shadow-md z-10">
+        <div class="max-w-4xl mx-auto flex justify-around items-center px-4">
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl">⭐️</span>
+                <span>NILAI: <span id="score-display">0</span></span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl">🪙</span>
+                <span>KOIN: <span id="coin-display">0</span></span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl">❤️</span>
+                <span>NYAWA: <span id="lives-display">3</span></span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl">🚩</span>
+                <span>SOAL: <span id="level-display">1/5</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <main class="max-w-5xl mx-auto w-full p-3 md:p-6 flex-grow flex flex-col items-center justify-center relative">
+        
+        <!-- Start Screen Khusus Anak Tunagrahita & Tunanetra -->
+        <div id="start-screen" class="easy-card p-6 md:p-10 text-center w-full max-w-3xl my-4 shadow-2xl relative z-30">
+            <div class="text-6xl mb-4 animate-float">🌟 🍄 🌱 ⭐️</div>
+            <h2 class="title-font text-3xl md:text-4xl text-red-600 mb-4 font-bold">Ayo Belajar Bersama Mario!</h2>
+            <p class="text-slate-800 font-bold mb-6 text-lg md:text-2xl leading-relaxed">
+                Bantu Mario memilih pipa jawaban yang benar. Dengarkan suara petunjuknya ya!
+            </p>
+
+            <div class="bg-yellow-100 border-4 border-yellow-500 rounded-2xl p-5 text-left mb-6 space-y-3 text-base md:text-xl font-semibold">
+                <p class="font-bold text-yellow-900 text-xl"><i class="fa-solid fa-hand-pointer mr-2"></i>Cara Bermain Sangat Mudah:</p>
+                <ul class="space-y-2 text-slate-800">
+                    <li>⬅️ ➔ <strong>Panah Kiri / Kanan:</strong> Jalan Kiri atau Kanan</li>
+                    <li>⬇️ ➔ <strong>Panah Bawah / Enter:</strong> Masuk ke Pipa Jawaban</li>
+                    <li>⬆️ ➔ <strong>Spasi / Panah Atas:</strong> Mario Melompat</li>
+                    <li>🔊 ➔ <strong>Tombol H:</strong> Dengar ulang pertanyaan suara</li>
+                </ul>
+            </div>
+
+            <button id="btn-start-game" onclick="startGame()" class="bg-green-600 hover:bg-green-500 text-white font-extrabold text-2xl md:text-3xl px-10 py-5 rounded-3xl border-4 border-black shadow-xl transform hover:scale-105 transition-all w-full cursor-pointer">
+                🎮 MULAI MAIN SEKARANG!
+            </button>
+        </div>
+
+        <!-- Question Card dengan Kalimat Sederhana & Teks Sangat Besar -->
+        <div id="question-card" class="hidden w-full bg-slate-900 text-white rounded-3xl p-6 border-8 border-yellow-400 shadow-2xl mb-4 relative z-20">
+            <div class="flex items-center justify-between gap-4">
+                <div class="flex-grow">
+                    <span id="materi-badge" class="bg-yellow-400 text-black font-extrabold px-4 py-2 rounded-full text-base md:text-lg tracking-wide mb-3 inline-block">Materi: Akar</span>
+                    <h3 id="question-text" class="text-xl md:text-3xl font-extrabold text-white leading-relaxed">
+                        Manakah bagian tumbuhan yang minum air di dalam tanah?
+                    </h3>
+                </div>
+                <button onclick="speakCurrentQuestion()" class="bg-yellow-400 text-black p-4 rounded-full hover:bg-yellow-300 transition shrink-0 border-4 border-black shadow-lg" title="Dengarkan Suara Soal">
+                    <i class="fa-solid fa-volume-high text-3xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Canvas Game -->
+        <div id="canvas-wrapper" class="relative w-full max-w-4xl aspect-[16/9] bg-sky-300 rounded-3xl border-8 border-black shadow-2xl overflow-hidden hidden">
+            <canvas id="gameCanvas" class="w-full h-full block"></canvas>
+
+            <!-- Touch Controls Super Besar -->
+            <div id="touch-controls" class="absolute bottom-3 left-0 right-0 px-4 flex justify-between items-center pointer-events-none md:hidden">
+                <div class="flex gap-3 pointer-events-auto">
+                    <button id="touch-left" class="bg-yellow-400 text-black border-4 border-black w-16 h-16 rounded-full text-3xl font-bold flex items-center justify-center active:bg-yellow-500 shadow-xl">◀</button>
+                    <button id="touch-right" class="bg-yellow-400 text-black border-4 border-black w-16 h-16 rounded-full text-3xl font-bold flex items-center justify-center active:bg-yellow-500 shadow-xl">▶</button>
+                </div>
+                <div class="flex gap-3 pointer-events-auto">
+                    <button id="touch-down" class="bg-green-500 text-white border-4 border-black w-16 h-16 rounded-full text-3xl font-bold flex items-center justify-center active:bg-green-600 shadow-xl">▼</button>
+                    <button id="touch-jump" class="bg-red-600 text-white border-4 border-black w-16 h-16 rounded-full text-3xl font-bold flex items-center justify-center active:bg-red-700 shadow-xl">🚀</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback Dialog Ramah & Memberi Penguatan Positif -->
+        <div id="feedback-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+            <div id="modal-content" class="bg-white text-black p-8 rounded-3xl border-8 border-black max-w-lg w-full text-center shadow-2xl">
+                <div id="feedback-icon" class="text-7xl mb-4">🌟</div>
+                <h3 id="feedback-title" class="title-font text-3xl font-extrabold mb-3">HEBAT! JAWABAN BENAR!</h3>
+                <p id="feedback-body" class="text-slate-800 font-bold mb-6 text-xl md:text-2xl leading-relaxed">
+                    Pintar sekali! Akar memang bertugas minum air di tanah.
+                </p>
+                <button id="feedback-next-btn" onclick="nextQuestionOrLevel()" class="bg-green-600 hover:bg-green-500 text-white font-extrabold px-8 py-5 rounded-3xl border-4 border-black text-2xl w-full shadow-xl">
+                    LANJUTKAN ➔
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-200 p-4 text-center text-sm md:text-base border-t-8 border-black font-semibold">
+        <p>Game Edukasi Spesial SLB (Tunagrahita & Tunanetra) • Belajar Bagian Tumbuhan Bersama Super Mario</p>
+    </footer>
+
+    <script>
+        /* ==========================================================================
+           1. AUDIO SYNTHESIZER (WEB AUDIO API) - NO EXTERNAL MP3 DEPENDENCIES
+           ========================================================================== */
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioCtx();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        // Mario Sound Effects Synthesizer
+        function playSound(type) {
+            if (!audioCtx) return;
+            
+            const now = audioCtx.currentTime;
+
+            if (type === 'jump') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.exponentialRampToValueAtTime(600, now + 0.15);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.15);
+            } 
+            else if (type === 'coin') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(987.77, now); // B5
+                osc.frequency.setValueAtTime(1318.51, now + 0.08); // E6
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } 
+            else if (type === 'pipe') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.linearRampToValueAtTime(100, now + 0.25);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            }
+            else if (type === 'correct') {
+                // Mario Power-Up Fanfare
+                const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99];
+                notes.forEach((freq, idx) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+                    gain.gain.setValueAtTime(0.2, now + idx * 0.06);
+                    gain.gain.linearRampToValueAtTime(0.01, now + (idx + 1) * 0.06);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now + idx * 0.06);
+                    osc.stop(now + (idx + 1) * 0.06);
+                });
+            } 
+            else if (type === 'wrong') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.linearRampToValueAtTime(80, now + 0.4);
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            }
+            else if (type === 'beep') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(440, now);
+                gain.gain.setValueAtTime(0.05, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.05);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.05);
+            }
+        }
+
+        /* ==========================================================================
+           2. ACCESSIBILITY & TEXT-TO-SPEECH (INDONESIAN TTS)
+           ========================================================================== */
+        let speechEnabled = true;
+        let isHighContrast = false;
+        const synth = window.speechSynthesis;
+
+        function speak(text, priority = false) {
+            if (!speechEnabled || !('speechSynthesis' in window)) return;
+
+            if (priority) {
+                synth.cancel();
+            }
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'id-ID';
+            utterance.rate = 0.85; // Kecepatan lebih pelan untuk kemudahan Tunagrahita
+            utterance.pitch = 1.1;  // Nada lebih ramah anak
+
+            synth.speak(utterance);
+        }
+
+        function toggleSpeech() {
+            speechEnabled = !speechEnabled;
+            const btnText = document.getElementById('speech-status-text');
+            const icon = document.getElementById('speech-icon');
+
+            if (speechEnabled) {
+                btnText.textContent = "Suara: ON";
+                icon.className = "fa-solid fa-volume-high text-xl";
+                speak("Suara narator aktif.");
+            } else {
+                btnText.textContent = "Suara: OFF";
+                icon.className = "fa-solid fa-volume-xmark text-xl";
+                synth.cancel();
+            }
+        }
+
+        function toggleHighContrast() {
+            isHighContrast = !isHighContrast;
+            const elements = [
+                document.getElementById('start-screen'),
+                document.getElementById('question-card'),
+                document.getElementById('modal-content'),
+                document.getElementById('hud-bar')
+            ];
+
+            elements.forEach(el => {
+                if (el) {
+                    if (isHighContrast) {
+                        el.classList.add('high-contrast-card');
+                    } else {
+                        el.classList.remove('high-contrast-card');
+                    }
+                }
+            });
+
+            speak(isHighContrast ? "Layar kontras tinggi aktif" : "Layar normal aktif");
+        }
+
+        function repeatQuestionOrInstruction() {
+            if (currentGameState === 'MENU') {
+                speak("Selamat datang! Tekan tombol hijau Mulai Main untuk bermain bersama Mario.");
+            } else if (currentGameState === 'PLAYING') {
+                const q = questions[currentQuestionIndex];
+                speak(`Materi ${q.materi}. Pertanyaan: ${q.question}. Pilih pipa jawaban: Pipa satu ${q.options[0]}. Pipa dua ${q.options[1]}.`, true);
+            }
+        }
+
+        /* ==========================================================================
+           3. GAME DATA - KALIMAT SEDERHANA KHUSUS TUNAGRAHITA (EASY TO READ)
+           ========================================================================== */
+        const questions = [
+            {
+                materi: "Akar Tumbuhan",
+                question: "Mana bagian tumbuhan di bawah tanah yang minum air?",
+                options: ["Akar", "Bunga"],
+                correctIndex: 0,
+                explanation: "Hebat! Akar ada di dalam tanah untuk menyerap air minum tumbuhan."
+            },
+            {
+                materi: "Batang Tumbuhan",
+                question: "Mana bagian berdiri tegak yang membawa air ke daun?",
+                options: ["Buah", "Batang"],
+                correctIndex: 1,
+                explanation: "Pintar! Batang berdiri tegak menyalurkan air ke seluruh tumbuhan."
+            },
+            {
+                materi: "Daun Tumbuhan",
+                question: "Mana bagian tumbuhan berwarna hijau tempat memasak makanan?",
+                options: ["Akar", "Daun"],
+                correctIndex: 1,
+                explanation: "Luar biasa! Daun berwarna hijau membuat makanan dengan bantuan sinar matahari."
+            },
+            {
+                materi: "Bunga Tumbuhan",
+                question: "Mana bagian tumbuhan yang cantik dan berwarna-warni?",
+                options: ["Bunga", "Batang"],
+                correctIndex: 0,
+                explanation: "Bagus sekali! Bunga sangat indah dan berwarna-warni disukai kupu-kupu."
+            },
+            {
+                materi: "Buah Tumbuhan",
+                question: "Mana bagian tumbuhan yang manis dan enak dimakan?",
+                options: ["Daun", "Buah"],
+                correctIndex: 1,
+                explanation: "Hore! Buah rasanya manis, enak dimakan, dan melindungi biji."
+            }
+        ];
+
+        /* ==========================================================================
+           4. GAME ENGINE & CANVAS LOGIC (PIPA LEBIH BESAR & SEDERHANA)
+           ========================================================================== */
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let currentGameState = 'MENU';
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let coins = 0;
+        let lives = 3;
+
+        const player = {
+            x: 80,
+            y: 0,
+            width: 44, // Karakter Mario lebih besar agar jelas terlihat
+            height: 56,
+            vx: 0,
+            vy: 0,
+            speed: 5,
+            jumpStrength: -12,
+            grounded: false,
+            facing: 'right'
+        };
+
+        const gravity = 0.55;
+        let groundY = 0;
+        let pipes = [];
+
+        let clouds = [
+            { x: 100, y: 40, size: 45 },
+            { x: 450, y: 50, size: 55 },
+            { x: 750, y: 35, size: 40 }
+        ];
+
+        let floatingCoins = [];
+
+        function resizeCanvas() {
+            const wrapper = document.getElementById('canvas-wrapper');
+            if (wrapper) {
+                canvas.width = wrapper.clientWidth;
+                canvas.height = wrapper.clientHeight;
+                groundY = canvas.height - 50;
+                player.y = groundY - player.height;
+            }
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        function setupLevel(questionIdx) {
+            const q = questions[questionIdx];
+            
+            document.getElementById('question-card').classList.remove('hidden');
+            document.getElementById('materi-badge').textContent = `Materi: ${q.materi}`;
+            document.getElementById('question-text').textContent = q.question;
+            document.getElementById('level-display').textContent = `${questionIdx + 1}/${questions.length}`;
+
+            player.x = 60;
+            player.y = groundY - player.height;
+            player.vx = 0;
+            player.vy = 0;
+
+            // Opsi dibuat 2 Pipa Sederhana agar Tunagrahita tidak bingung
+            const totalPipes = q.options.length;
+            const startX = canvas.width * 0.45;
+            const spacing = (canvas.width - startX - 100) / (totalPipes - 1 || 1);
+
+            pipes = q.options.map((optionText, idx) => {
+                return {
+                    x: startX + idx * spacing,
+                    y: groundY - 90,
+                    width: 90, // Pipa dibuat lebih besar & jelas
+                    height: 90,
+                    label: optionText,
+                    optionIdx: idx,
+                    isCorrect: idx === q.correctIndex
+                };
+            });
+
+            floatingCoins = [
+                { x: player.x + 120, y: groundY - 120, collected: false },
+                { x: player.x + 240, y: groundY - 140, collected: false }
+            ];
+
+            speakCurrentQuestion();
+        }
+
+        function speakCurrentQuestion() {
+            const q = questions[currentQuestionIndex];
+            const pipeAnnounce = q.options.map((opt, i) => `Pipa ${i + 1} ${opt}`).join('. ');
+            speak(`Materi ${q.materi}. Pertanyaan: ${q.question}. Pilihan jawaban: ${pipeAnnounce}. Masuk ke pipa pilihanmu!`, true);
+        }
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'id-ID';
+            utterance.rate = 0.95; // Kecepatan sedikit lebih lambat untuk kejelasan
+            utterance.pitch = 1.0;
+
+            synth.speak(utterance);
+        }
+
+        function toggleSpeech() {
+            speechEnabled = !speechEnabled;
+            const btnText = document.getElementById('speech-status-text');
+            const icon = document.getElementById('speech-icon');
+
+            if (speechEnabled) {
+                btnText.textContent = "Suara: ON";
+                icon.className = "fa-solid fa-volume-high text-lg";
+                speak("Suara narator diaktifkan.");
+            } else {
+                btnText.textContent = "Suara: OFF";
+                icon.className = "fa-solid fa-volume-xmark text-lg";
+                synth.cancel();
+            }
+        }
+
+        function toggleHighContrast() {
+            isHighContrast = !isHighContrast;
+            const elements = [
+                document.getElementById('start-screen'),
+                document.getElementById('question-card'),
+                document.getElementById('modal-content'),
+                document.getElementById('hud-bar')
+            ];
+
+            elements.forEach(el => {
+                if (el) {
+                    if (isHighContrast) {
+                        el.classList.add('high-contrast-card');
+                    } else {
+                        el.classList.remove('high-contrast-card');
+                    }
+                }
+            });
+
+            speak(isHighContrast ? "Mode Kontras Tinggi diaktifkan" : "Mode Kontras Normal diaktifkan");
+        }
+
+        function repeatQuestionOrInstruction() {
+            if (currentGameState === 'MENU') {
+                speak("Selamat datang di Super Mario Edukasi Bagian Tumbuhan. Tekan tombol Mulai atau tekan Spasi untuk bermain.");
+            } else if (currentGameState === 'PLAYING') {
+                const q = questions[currentQuestionIndex];
+                speak(`Materi: ${q.materi}. Pertanyaan: ${q.question}. Pilih pipa jawaban yang tepat. Pipa satu: ${q.options[0]}. Pipa dua: ${q.options[1]}. Pipa tiga: ${q.options[2]}.`, true);
+            }
+        }
+
+        /* ==========================================================================
+           3. GAME DATA & PLANT LESSON QUESTIONS
+           ========================================================================== */
+        const questions = [
+            {
+                materi: "Akar Tumbuhan",
+                question: "Bagian tumbuhan mana yang berada di dalam tanah dan bertugas menyerap air serta nutrisi?",
+                options: ["Akar", "Daun", "Bunga"],
+                correctIndex: 0,
+                explanation: "Akar tumbuh di bawah tanah, menyerap air dan garam hara untuk seluruh bagian tumbuhan."
+            },
+            {
+                materi: "Batang Tumbuhan",
+                question: "Bagian yang menopang tumbuhan dan menyalurkan air dari akar ke daun adalah...",
+                options: ["Bunga", "Batang", "Buah"],
+                correctIndex: 1,
+                explanation: "Batang berfungsi sebagai penopang utama dan saluran pengangkut air serta zat makanan."
+            },
+            {
+                materi: "Daun & Fotosintesis",
+                question: "Bagian tumbuhan yang berwarna hijau dan berfungsi membuat makanan dengan bantuan sinar matahari adalah...",
+                options: ["Akar", "Biji", "Daun"],
+                correctIndex: 2,
+                explanation: "Daun mengandung klorofil untuk memasak makanan sendiri melalui proses fotosintesis."
+            },
+            {
+                materi: "Bunga & Perkembangbiakan",
+                question: "Bagian tumbuhan yang berwarna indah dan berfungsi sebagai alat perkembangbiakan adalah...",
+                options: ["Bunga", "Batang", "Akar"],
+                correctIndex: 0,
+                explanation: "Bunga menarik perhatian serangga untuk penyerbukan dan pembentukan biji."
+            },
+            {
+                materi: "Buah & Biji",
+                question: "Bagian tumbuhan yang melindungi biji serta menyimpan cadangan makanan manis adalah...",
+                options: ["Daun", "Buah", "Akar"],
+                correctIndex: 1,
+                explanation: "Buah membungkus biji dan sering kali dinikmati oleh manusia dan hewan."
+            }
+        ];
+
+        /* ==========================================================================
+           4. GAME ENGINE & CANVAS LOGIC
+           ========================================================================== */
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let currentGameState = 'MENU'; // MENU, PLAYING, MODAL
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let coins = 0;
+        let lives = 3;
+
+        // Player (Mario) Object
+        const player = {
+            x: 80,
+            y: 0,
+            width: 36,
+            height: 48,
+            vx: 0,
+            vy: 0,
+            speed: 4.5,
+            jumpStrength: -11,
+            grounded: false,
+            facing: 'right',
+            animFrame: 0,
+            animTimer: 0
+        };
+
+        const gravity = 0.5;
+        let groundY = 0;
+
+        // Warp Pipes (Answer Options)
+        let pipes = [];
+
+        // Decorative Elements
+        let clouds = [
+            { x: 100, y: 40, size: 40 },
+            { x: 400, y: 60, size: 50 },
+            { x: 700, y: 30, size: 45 }
+        ];
+
+        let floatingCoins = [];
+
+        function resizeCanvas() {
+            const wrapper = document.getElementById('canvas-wrapper');
+            if (wrapper) {
+                canvas.width = wrapper.clientWidth;
+                canvas.height = wrapper.clientHeight;
+                groundY = canvas.height - 50;
+                player.y = groundY - player.height;
+            }
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        function setupLevel(questionIdx) {
+            const q = questions[questionIdx];
+            
+            // Update HUD & UI Question Banner
+            document.getElementById('question-card').classList.remove('hidden');
+            document.getElementById('materi-badge').textContent = `Materi: ${q.materi}`;
+            document.getElementById('question-text').textContent = q.question;
+            document.getElementById('level-display').textContent = `${questionIdx + 1}/${questions.length}`;
+
+            // Reset Mario Position
+            player.x = 60;
+            player.y = groundY - player.height;
+            player.vx = 0;
+            player.vy = 0;
+
+            // Generate Pipes for Answer Options
+            const totalPipes = q.options.length;
+            const startX = canvas.width * 0.35;
+            const spacing = (canvas.width - startX - 80) / (totalPipes - 1 || 1);
+
+            pipes = q.options.map((optionText, idx) => {
+                return {
+                    x: startX + idx * spacing,
+                    y: groundY - 80,
+                    width: 70,
+                    height: 80,
+                    label: optionText,
+                    optionIdx: idx,
+                    isCorrect: idx === q.correctIndex
+                };
+            });
+
+            // Generate Collectible Coins
+            floatingCoins = [
+                { x: player.x + 100, y: groundY - 120, collected: false },
+                { x: player.x + 200, y: groundY - 150, collected: false },
+                { x: player.x + 300, y: groundY - 120, collected: false }
+            ];
+
+            // Speech narration for accessible learning
+            speakCurrentQuestion();
+        }
+
+        function speakCurrentQuestion() {
+            const q = questions[currentQuestionIndex];
+            const pipeAnnounce = q.options.map((opt, i) => `Pipa ${i + 1}: ${opt}`).join('. ');
+            speak(`Materi ${q.materi}. Pertanyaan: ${q.question}. Pilihan jawaban: ${pipeAnnounce}. Masuki pipa jawaban yang menurutmu benar!`, true);
+        }
+
+        /* ==========================================================================
+           5. GAME LOOP & RENDERING
+           ========================================================================== */
+        const keys = {};
+
+        window.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            
+            if (e.key === 'h' || e.key === 'H') {
+                repeatQuestionOrInstruction();
+            }
+
+            if (currentGameState === 'PLAYING') {
+                if ((e.key === 'ArrowUp' || e.key === ' ' || e.key === 'w') && player.grounded) {
+                    player.vy = player.jumpStrength;
+                    player.grounded = false;
+                    playSound('jump');
+                }
+
+                if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'Enter') {
+                    checkPipeInteraction();
+                }
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        // Mobile / Touch controls listeners
+        document.getElementById('touch-left').addEventListener('touchstart', (e) => { e.preventDefault(); keys['ArrowLeft'] = true; });
+        document.getElementById('touch-left').addEventListener('touchend', (e) => { e.preventDefault(); keys['ArrowLeft'] = false; });
+        document.getElementById('touch-right').addEventListener('touchstart', (e) => { e.preventDefault(); keys['ArrowRight'] = true; });
+        document.getElementById('touch-right').addEventListener('touchend', (e) => { e.preventDefault(); keys['ArrowRight'] = false; });
+        document.getElementById('touch-jump').addEventListener('touchstart', (e) => { 
+            e.preventDefault(); 
+            if (player.grounded && currentGameState === 'PLAYING') {
+                player.vy = player.jumpStrength;
+                player.grounded = false;
+                playSound('jump');
+            }
+        });
+        document.getElementById('touch-down').addEventListener('touchstart', (e) => { 
+            e.preventDefault(); 
+            if (currentGameState === 'PLAYING') checkPipeInteraction(); 
+        });
+
+        function update() {
+            if (currentGameState !== 'PLAYING') return;
+
+            // Horizontal Movement
+            if (keys['ArrowLeft'] || keys['a']) {
+                player.vx = -player.speed;
+                player.facing = 'left';
+            } else if (keys['ArrowRight'] || keys['d']) {
+                player.vx = player.speed;
+                player.facing = 'right';
+            } else {
+                player.vx = 0;
+            }
+
+            // Apply Gravity
+            player.vy += gravity;
+            player.x += player.vx;
+            player.y += player.vy;
+
+            // Ground Collision
+            if (player.y + player.height >= groundY) {
+                player.y = groundY - player.height;
+                player.vy = 0;
+                player.grounded = true;
+            }
+
+            // Canvas Boundary Constraints
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+
+            // Coin Collision Detection
+            floatingCoins.forEach(coin => {
+                if (!coin.collected && Math.abs(player.x - coin.x) < 30 && Math.abs(player.y - coin.y) < 40) {
+                    coin.collected = true;
+                    coins += 1;
+                    score += 100;
+                    updateHUD();
+                    playSound('coin');
+                    speak("Koin didapatkan!", false);
+                }
+            });
+
+            // Proximity Sound Beep for Nearest Pipe (Audio Guidance)
+            pipes.forEach((pipe, idx) => {
+                const dist = Math.abs((player.x + player.width / 2) - (pipe.x + pipe.width / 2));
+                if (dist < 40 && player.grounded) {
+                    if (Math.random() < 0.05) playSound('beep');
+                }
+            });
+        }
+
+        function checkPipeInteraction() {
+            let interacted = false;
+
+            pipes.forEach(pipe => {
+                const playerCenterX = player.x + player.width / 2;
+                if (playerCenterX >= pipe.x && playerCenterX <= pipe.x + pipe.width && player.grounded) {
+                    interacted = true;
+                    playSound('pipe');
+                    evaluateAnswer(pipe);
+                }
+            });
+
+            if (!interacted) {
+                speak("Mendekatlah ke atas pipa jawaban untuk masuk!");
+            }
+        }
+
+        function evaluateAnswer(pipe) {
+            currentGameState = 'MODAL';
+            const modal = document.getElementById('feedback-modal');
+            const icon = document.getElementById('feedback-icon');
+            const title = document.getElementById('feedback-title');
+            const body = document.getElementById('feedback-body');
+            const btn = document.getElementById('feedback-next-btn');
+
+            modal.classList.remove('hidden');
+
+            if (pipe.isCorrect) {
+                score += 100;
+                coins += 5;
+                updateHUD();
+                playSound('correct');
+
+                icon.textContent = "🌟 🍄 🏆";
+                title.textContent = "HEBAT! JAWABAN BENAR!";
+                title.className = "title-font text-3xl font-extrabold text-green-600 mb-2";
+                
+                const exp = questions[currentQuestionIndex].explanation;
+                body.textContent = `${exp}`;
+                
+                speak(`Luar biasa! Jawabanmu benar! ${exp}`, true);
+            } else {
+                lives -= 1;
+                updateHUD();
+                playSound('wrong');
+
+                icon.textContent = "💪 🌟";
+                title.textContent = "HAMPIR BENAR!";
+                title.className = "title-font text-3xl font-extrabold text-orange-600 mb-2";
+                
+                body.textContent = `Tidak apa-apa! Ayo coba lagi, kamu pasti bisa!`;
+                speak(`Hampir benar! Tidak apa-apa, mari kita coba lagi bersama Mario!`, true);
+
+                if (lives <= 0) {
+                    btn.textContent = "MAIN LAGI 🔄";
+                }
+            }
+        }
+
+        function nextQuestionOrLevel() {
+            document.getElementById('feedback-modal').classList.add('hidden');
+
+            if (lives <= 0) {
+                // Reset Game
+                lives = 3;
+                score = 0;
+                coins = 0;
+                currentQuestionIndex = 0;
+                updateHUD();
+                setupLevel(currentQuestionIndex);
+                currentGameState = 'PLAYING';
+                return;
+            }
+
+            const currentQ = questions[currentQuestionIndex];
+            // If correct, advance to next
+            if (pipes.find(p => p.isCorrect && Math.abs((player.x + player.width/2) - (p.x + p.width/2)) < p.width)) {
+                currentQuestionIndex++;
+                if (currentQuestionIndex >= questions.length) {
+                    // Game Complete
+                    currentGameState = 'MENU';
+                    speak("Selamat! Kamu berhasil menyelesaikan semua pertanyaan tentang bagian tumbuhan bersama Mario!", true);
+                    alert("🎉 SELAMAT! Kamu telah menyelesaikan petualangan bagian tumbuhan bersama Mario!");
+                    document.getElementById('question-card').classList.add('hidden');
+                    document.getElementById('canvas-wrapper').classList.add('hidden');
+                    document.getElementById('start-screen').classList.remove('hidden');
+                    return;
+                }
+            }
+
+            currentGameState = 'PLAYING';
+            setupLevel(currentQuestionIndex);
+        }
+
+        /* ==========================================================================
+           6. DRAWING FUNCTIONS (PIXEL ART STYLE)
+           ========================================================================== */
+        function drawMario(x, y, width, height, facing) {
+            ctx.save();
+            if (facing === 'left') {
+                ctx.translate(x + width, y);
+                ctx.scale(-1, 1);
+                x = 0;
+                y = 0;
+            }
+
+            // Red Hat
+            ctx.fillStyle = '#E52521';
+            ctx.fillRect(x + 6, y, 24, 8);
+            ctx.fillRect(x + 6, y + 4, 28, 6);
+
+            // Face / Skin
+            ctx.fillStyle = '#FCCC96';
+            ctx.fillRect(x + 8, y + 10, 20, 14);
+
+            // Eyes & Mustache
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(x + 20, y + 12, 4, 6); // Eye
+            ctx.fillRect(x + 12, y + 18, 16, 6); // Mustache
+
+            // Blue Overalls
+            ctx.fillStyle = '#0022B4';
+            ctx.fillRect(x + 8, y + 28, 20, 14);
+
+            // Red Shirt Arms
+            ctx.fillStyle = '#E52521';
+            ctx.fillRect(x + 2, y + 24, 6, 12);
+            ctx.fillRect(x + 28, y + 24, 6, 12);
+
+            // Yellow Buttons
+            ctx.fillStyle = '#FCD800';
+            ctx.fillRect(x + 10, y + 30, 4, 4);
+            ctx.fillRect(x + 22, y + 30, 4, 4);
+
+            // Shoes
+            ctx.fillStyle = '#924A00';
+            ctx.fillRect(x + 4, y + 42, 12, 6);
+            ctx.fillRect(x + 20, y + 42, 12, 6);
+
+            ctx.restore();
+        }
+
+        function drawPipe(pipe) {
+            // Pipa Lebih Jelas Dengan Teks Super Besar Khusus Anak Tunagrahita
+            ctx.fillStyle = '#00A800';
+            ctx.fillRect(pipe.x - 6, pipe.y, pipe.width + 12, 28);
+            ctx.fillStyle = '#80D010';
+            ctx.fillRect(pipe.x - 2, pipe.y + 2, 8, 24);
+
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(pipe.x - 6, pipe.y, pipe.width + 12, 28);
+
+            ctx.fillStyle = '#00A800';
+            ctx.fillRect(pipe.x, pipe.y + 28, pipe.width, pipe.height - 28);
+            ctx.fillStyle = '#80D010';
+            ctx.fillRect(pipe.x + 6, pipe.y + 28, 8, pipe.height - 28);
+
+            ctx.strokeRect(pipe.x, pipe.y + 28, pipe.width, pipe.height - 28);
+
+            // Label Jawaban Berwarna Kuning Terang Teks Besar
+            ctx.fillStyle = '#FFD700';
+            ctx.fillRect(pipe.x - 20, pipe.y - 55, pipe.width + 40, 45);
+            ctx.strokeRect(pipe.x - 20, pipe.y - 55, pipe.width + 40, 45);
+
+            ctx.fillStyle = '#000000';
+            ctx.font = 'bold 22px Lexend, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(pipe.label, pipe.x + pipe.width / 2, pipe.y - 24);
+        }
+
+        function drawCoin(x, y) {
+            ctx.fillStyle = '#FCD800';
+            ctx.beginPath();
+            ctx.arc(x, y, 10, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.fillStyle = '#CC9600';
+            ctx.fillRect(x - 2, y - 5, 4, 10);
+        }
+
+        function render() {
+            // Clear Sky Background
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Clouds
+            ctx.fillStyle = '#FFFFFF';
+            clouds.forEach(c => {
+                ctx.beginPath();
+                ctx.arc(c.x, c.y, c.size, 0, Math.PI * 2);
+                ctx.arc(c.x + 25, c.y - 10, c.size * 0.8, 0, Math.PI * 2);
+                ctx.arc(c.x + 50, c.y, c.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Draw Ground Blocks (Super Mario Brick Style)
+            const blockSize = 32;
+            for (let x = 0; x < canvas.width; x += blockSize) {
+                // Top Grass Layer
+                ctx.fillStyle = '#00A800';
+                ctx.fillRect(x, groundY, blockSize, 8);
+                // Dirt Base
+                ctx.fillStyle = '#C84C0C';
+                ctx.fillRect(x, groundY + 8, blockSize, canvas.height - groundY - 8);
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(x, groundY + 8, blockSize, canvas.height - groundY - 8);
+            }
+
+            // Draw Warp Pipes (Answers)
+            pipes.forEach(pipe => drawPipe(pipe));
+
+            // Draw Coins
+            floatingCoins.forEach(coin => {
+                if (!coin.collected) drawCoin(coin.x, coin.y);
+            });
+
+            // Draw Player (Mario)
+            drawMario(player.x, player.y, player.width, player.height, player.facing);
+
+            // Call next animation frame
+            requestAnimationFrame(() => {
+                update();
+                render();
+            });
+        }
+
+        function updateHUD() {
+            document.getElementById('score-display').textContent = String(score).padStart(5, '0');
+            document.getElementById('coin-display').textContent = `x${String(coins).padStart(2, '0')}`;
+            document.getElementById('lives-display').textContent = `x${lives}`;
+        }
+
+        /* ==========================================================================
+           7. INITIALIZATION
+           ========================================================================== */
+        function startGame() {
+            initAudio();
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('canvas-wrapper').classList.remove('hidden');
+
+            resizeCanvas();
+            currentGameState = 'PLAYING';
+            currentQuestionIndex = 0;
+            score = 0;
+            coins = 0;
+            lives = 3;
+
+            updateHUD();
+            setupLevel(currentQuestionIndex);
+            render();
+        }
+
+        // Keyboard Shortcut Initial Listeners
+        window.addEventListener('load', () => {
+            speak("Selamat datang di Game Super Mario Belajar Bagian Tumbuhan. Tekan tombol Mulai Petualangan Mario untuk bermain!");
+        });
+    </script>
+</body>
+</html>
